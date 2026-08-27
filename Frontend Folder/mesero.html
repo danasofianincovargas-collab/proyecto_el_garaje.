@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Mesero - El Garaje</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { font-family: 'Poppins', sans-serif; background-color: #f8f9fa; }
+        .navbar-custom { background-color: #212529 !important; }
+        .card-custom { border: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .mesa-card { cursor: pointer; transition: transform 0.2s; }
+        .mesa-card:hover { transform: translateY(-3px); }
+    </style>
+</head>
+<body>
+    <!-- Barra de Navegación -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom shadow-sm sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold text-warning" href="index.html">🚗 El Garaje - Mesero / Caja</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center gap-3">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link" href="menu.html">Ir al Menú</a></li>
+                </ul>
+            </div>
+            <a href="#" onclick="cerrarSesion(); return false;" class="btn btn-outline-light btn-sm fw-bold ms-lg-3">Cerrar Sesión</a>
+        </div>
+    </nav>
+    <!-- Contenido Principal -->
+    <div class="container my-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="fw-bold">📋 Panel de Mesero y Caja</h2>
+                <p class="text-muted mb-0">Control de estado de mesas (Limpio/Libre, Ocupado, En Proceso de Limpieza) y pedidos.</p>
+            </div>
+            <button onclick="cargarPanelMesero()" class="btn btn-outline-dark btn-sm fw-bold">🔄 Actualizar</button>
+        </div>
+        <!-- Sección de Estado de Mesas -->
+        <div class="card card-custom p-4 mb-4 bg-white">
+            <h4 class="fw-bold mb-3">🪑 Estado de las Mesas</h4>
+            <p class="text-muted small mb-3">Haz clic en el botón de estado de cada mesa para cambiarla entre <strong>Limpio / Libre</strong>, <strong>Ocupado</strong> y <strong>En Proceso (Limpieza)</strong>.</p>
+
+            <div class="row g-3" id="contenedorMesas">
+                <!-- Se llena dinámicamente con JavaScript -->
+            </div>
+        </div>
+        <hr class="my-4">
+        <!-- Sección de Pedidos Activos para el Mesero -->
+        <h4 class="fw-bold mb-3">🛎️ Pedidos Recientes en el Salón</h4>
+        <div class="row g-4" id="contenedorPedidosMesero">
+            <!-- Se llena dinámicamente -->
+        </div>
+        <div id="sinPedidosMesero" class="alert alert-info text-center mt-3 d-none">No hay pedidos activos en este momento.</div>
+    </div>
+    <!-- Lógica de sesión y protección de vista centralizada en script.js -->
+    <script src="script.js"></script>
+    <!-- Script de Gestión de Mesas y Pedidos -->
+    <script>
+        // Protección real: exige haber pasado el login con rol "mesero".
+        // Sin esto, cualquiera entraba solo escribiendo la URL.
+        const usuarioActivo = protegerVista('mesero');
+        if (!usuarioActivo) {
+            throw new Error('Acceso no autorizado. Redirigiendo a login.');
+        }
+
+        const totalMesas = 8;
+        function cargarPanelMesero() {
+            cargarMesas();
+            cargarPedidosMesero();
+        }
+        function cargarMesas() {
+            const contenedor = document.getElementById('contenedorMesas');
+            contenedor.innerHTML = '';
+            let estadosMesas = JSON.parse(localStorage.getItem('mesasEstado') || '{}');
+            for (let i = 1; i <= totalMesas; i++) {
+                let estado = estadosMesas[i] || 'Limpia / Libre';
+
+                let badgeClase = '';
+                let textoEstado = '';
+                let siguienteEstado = '';
+                if (estado === 'Limpia / Libre') {
+                    badgeClase = 'bg-success';
+                    textoEstado = '🟢 Limpio / Libre';
+                    siguienteEstado = 'Ocupada';
+                } else if (estado === 'Ocupada') {
+                    badgeClase = 'bg-danger';
+                    textoEstado = '🔴 Ocupado';
+                    siguienteEstado = 'En Limpieza';
+                } else {
+                    badgeClase = 'bg-warning text-dark';
+                    textoEstado = '🟡 En Proceso de Limpieza';
+                    siguienteEstado = 'Limpia / Libre';
+                }
+                contenedor.innerHTML += `
+                    <div class="col-md-3 col-sm-6">
+                        <div class="card card-custom p-3 text-center mesa-card border">
+                            <h5 class="fw-bold text-dark mb-2">Mesa #${i}</h5>
+                            <div class="mb-3">
+                                <span class="badge ${badgeClase} p-2 w-100">${textoEstado}</span>
+                            </div>
+                            <button onclick="cambiarEstadoMesa(${i}, '${siguienteEstado}')" class="btn btn-outline-primary btn-sm fw-bold">
+                                Cambiar a: ${siguienteEstado}
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        function cambiarEstadoMesa(numMesa, nuevoEstado) {
+            let estadosMesas = JSON.parse(localStorage.getItem('mesasEstado') || '{}');
+            estadosMesas[numMesa] = nuevoEstado;
+            localStorage.setItem('mesasEstado', JSON.stringify(estadosMesas));
+            cargarMesas();
+        }
+        function cargarPedidosMesero() {
+            const contenedor = document.getElementById('contenedorPedidosMesero');
+            const alerta = document.getElementById('sinPedidosMesero');
+            contenedor.innerHTML = '';
+            let pedidos = JSON.parse(localStorage.getItem('pedidosRestaurante') || '[]');
+            if (pedidos.length === 0) {
+                alerta.classList.remove('d-none');
+                return;
+            }
+            alerta.classList.add('d-none');
+            pedidos.forEach(pedido => {
+                let itemsHtml = '';
+                let totalPedido = 0;
+                if (pedido.items && Array.isArray(pedido.items)) {
+                    pedido.items.forEach(item => {
+                        let subtotal = (item.precio || 0) * (item.cantidad || 1);
+                        totalPedido += subtotal;
+                        itemsHtml += `<li class="list-group-item d-flex justify-content-between align-items-center small">
+                            ${item.nombre} (x${item.cantidad}) <span class="text-muted">$${subtotal.toLocaleString()}</span>
+                        </li>`;
+                    });
+                }
+                let estadoCocina = pedido.estadoCocina || 'Pendiente';
+                let badgeCocinaClase = estadoCocina === 'Listo' ? 'bg-success' : 'bg-warning text-dark';
+
+                let estadoEntregado = pedido.estadoEntregado || 'No Entregado';
+                let btnEntregadoClase = estadoEntregado === 'Entregado' ? 'btn-success' : 'btn-outline-success';
+                let textoBtnEntregado = estadoEntregado === 'Entregado' ? '✅ Entregado a la mesa' : '🍽️ Entregado / Cobrar';
+                contenedor.innerHTML += `
+                    <div class="col-md-4">
+                        <div class="card card-custom h-100 p-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h5 class="fw-bold text-primary mb-0">Mesa #${pedido.mesa}</h5>
+                                <span class="badge ${badgeCocinaClase}">Cocina: ${estadoCocina}</span>
+                            </div>
+                            <p class="text-muted small mb-2">🕒 Hora: ${pedido.hora || 'N/A'}</p>
+                            <ul class="list-group mb-2 border rounded">${itemsHtml}</ul>
+                            <div class="fw-bold mb-3 text-success text-end">Total: $${totalPedido.toLocaleString()} COP</div>
+                            <div class="mt-auto d-grid gap-2">
+                                <button onclick="marcarEntregado(${pedido.id})" class="btn ${btnEntregadoClase} btn-sm fw-bold" style="font-size: 12px;">
+                                    ${textoBtnEntregado}
+                                </button>
+                                <button onclick="eliminarPedido(${pedido.id})" class="btn btn-outline-danger btn-sm fw-bold" style="font-size: 12px;">
+                                    🗑️ Eliminar Pedido
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+        function marcarEntregado(id) {
+            let pedidos = JSON.parse(localStorage.getItem('pedidosRestaurante') || '[]');
+            let p = pedidos.find(item => item.id === id);
+
+            if (p) {
+                if (p.estadoEntregado === 'Entregado') {
+                    alert('Este pedido ya fue marcado como entregado y cobrado.');
+                    return;
+                }
+                let totalPedido = 0;
+                if (p.items && Array.isArray(p.items)) {
+                    p.items.forEach(item => {
+                        totalPedido += (item.precio || 0) * (item.cantidad || 1);
+                    });
+                }
+                let totalVentasActual = parseFloat(localStorage.getItem('totalVentas') || '0');
+                totalVentasActual += totalPedido;
+                localStorage.setItem('totalVentas', totalVentasActual.toString());
+                p.estadoEntregado = 'Entregado';
+                localStorage.setItem('pedidosRestaurante', JSON.stringify(pedidos));
+
+                // Generar la factura para que el cliente la vea automáticamente en menu.html
+                localStorage.setItem('facturaCliente', JSON.stringify({
+                    id: p.id,
+                    mesa: p.mesa,
+                    items: p.items,
+                    total: totalPedido,
+                    hora: new Date().toLocaleTimeString()
+                }));
+
+                // Liberar la mesa (pasa a "En Limpieza") para mantener sincronía con Admin y el Menú
+                let estadosMesas = JSON.parse(localStorage.getItem('mesasEstado') || '{}');
+                estadosMesas[p.mesa] = 'En Limpieza';
+                localStorage.setItem('mesasEstado', JSON.stringify(estadosMesas));
+
+                alert(`✅ ¡Pedido de la Mesa #${p.mesa} entregado y cobrado con éxito!\nSe sumaron $${totalPedido.toLocaleString()} COP a la caja.`);
+                cargarPanelMesero();
+            }
+        }
+        function eliminarPedido(id) {
+            if (confirm("¿Estás seguro de eliminar este pedido del panel?")) {
+                let pedidos = JSON.parse(localStorage.getItem('pedidosRestaurante') || '[]');
+                pedidos = pedidos.filter(item => item.id !== id);
+                localStorage.setItem('pedidosRestaurante', JSON.stringify(pedidos));
+                cargarPedidosMesero();
+            }
+        }
+        document.addEventListener("DOMContentLoaded", cargarPanelMesero);
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

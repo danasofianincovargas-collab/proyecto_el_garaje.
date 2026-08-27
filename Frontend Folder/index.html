@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio - El Garaje</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #fdfbf7;
+            color: #212529;
+        }
+        .navbar-custom {
+            background-color: #212529;
+        }
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+        .hero-card-img {
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            height: 420px;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Barra de Navegación Exacta -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4 shadow-sm">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold text-white" href="index.html">🚗 El Garaje</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav align-items-center gap-4">
+                    <li class="nav-item"><a class="nav-link text-white fw-bold" href="index.html">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link text-light" href="menu.html">Menú</a></li>
+                    <li class="nav-item"><a class="nav-link text-light" href="destinos.html">Sedes</a></li>
+                    <li class="nav-item"><a class="nav-link text-light" href="login.html">Personal</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sección Principal (Hero) -->
+    <div class="container my-5 py-4">
+        <div class="row align-items-center">
+            <div class="col-lg-6 pe-lg-5">
+                <h1 class="hero-title mb-4">
+                    Sabor urbano, rápido y con estilo en <span class="text-warning" style="color: #ffc107 !important;">El Garaje</span>
+                </h1>
+                <p class="text-muted fs-6 mb-4">
+                    Disfruta de la mejor comida rápida casual, platos gratinados y desgranados inspirados en la cultura callejera de Bogotá. Explora nuestro menú interactivo o encuentra tu sede más cercana.
+                </p>
+                <div class="d-flex gap-3">
+                    <a href="menu.html" class="btn btn-warning fw-bold px-4 py-3 shadow-sm" style="background-color: #ffc107; border: none;">Ver Menú Digital</a>
+                    <a href="destinos.html" class="btn btn-outline-dark fw-bold px-4 py-3">Conocer Sedes</a>
+                </div>
+            </div>
+            <div class="col-lg-6 mt-4 mt-lg-0">
+                <img src="jpg/local-el-garaje.jpg" class="w-100 hero-card-img" alt="Local El Garaje">
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección de Características Inferior -->
+    <div class="container my-5 pt-4 border-top">
+        <div class="row text-center g-4">
+            <div class="col-md-4">
+                <div class="p-3">
+                    <div class="fs-1 mb-2">🍔</div>
+                    <h5 class="fw-bold">Calidad y Sabor</h5>
+                    <p class="text-muted small">Ingredientes frescos y porciones contundentes preparadas al instante.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-3">
+                    <div class="fs-1 mb-2">📍</div>
+                    <h5 class="fw-bold">Múltiples Puntos</h5>
+                    <p class="text-muted small">Ubicaciones estratégicas en Bogotá y zona de influencia para atenderte rápido.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-3">
+                    <div class="fs-1 mb-2">💻</div>
+                    <h5 class="fw-bold">Tecnología Web</h5>
+                    <p class="text-muted small">Sistema interactivo de pedidos en línea desarrollado bajo estándares técnicos.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

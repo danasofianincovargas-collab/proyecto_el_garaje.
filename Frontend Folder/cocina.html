@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vista Cocina - El Garaje</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { font-family: 'Poppins', sans-serif; background-color: #f8f9fa; }
+        .navbar-custom { background-color: #212529 !important; }
+        .card-custom { border: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body>
+
+    <!-- Barra de Navegación -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom shadow-sm sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold text-warning" href="index.html">🚗 El Garaje - Cocina</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center gap-3">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link" href="menu.html">Menú (Cliente)</a></li>
+                </ul>
+            </div>
+            <a href="#" onclick="cerrarSesion(); return false;" class="btn btn-outline-light btn-sm fw-bold ms-lg-3">Cerrar Sesión</a>
+        </div>
+    </nav>
+
+    <!-- Contenido Principal de Cocina -->
+    <div class="container my-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="fw-bold">🍳 Panel de Cocina</h2>
+                <p class="text-muted mb-0">Gestión de pedidos activos y control de platos agotados en tiempo real.</p>
+            </div>
+            <button onclick="cargarTodo()" class="btn btn-outline-dark btn-sm fw-bold">🔄 Actualizar</button>
+        </div>
+
+        <!-- Panel de Control de Inventario / Agotados -->
+        <div class="card card-custom p-4 mb-4 bg-white border-start border-danger border-4">
+            <h5 class="fw-bold text-danger mb-2">🚫 Control de Platos / Ingredientes Agotados</h5>
+            <p class="text-muted small mb-3">Marca los platos que ya no tienen existencias. Esto se actualizará automáticamente para los clientes en el menú.</p>
+            <div class="row g-3" id="contenedorInventarioCocina">
+                <!-- Se llena dinámicamente -->
+            </div>
+        </div>
+
+        <hr class="my-4">
+
+        <!-- Título y Botón para cerrar pedidos del día -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="fw-bold mb-0">📋 Pedidos Activos en Cocina</h4>
+            <button onclick="cerrarPedidosDelDia()" class="btn btn-danger btn-sm fw-bold shadow-sm">
+                🗑️ Cerrar / Borrar Pedidos del Día
+            </button>
+        </div>
+
+        <div class="row g-4" id="contenedorCocina">
+            <!-- Se llena dinámicamente -->
+        </div>
+        <div id="sinPedidosCocina" class="alert alert-info text-center mt-3 d-none">No hay pedidos pendientes en cocina.</div>
+    </div>
+
+    <!-- Lógica de sesión y protección de vista centralizada en script.js -->
+    <script src="script.js"></script>
+    <!-- Script de Cocina e Inventario -->
+    <script>
+        // Protección real: exige haber pasado el login con rol "cocina".
+        // Sin esto, cualquiera entraba solo escribiendo la URL.
+        const usuarioActivo = protegerVista('cocina');
+        if (!usuarioActivo) {
+            throw new Error('Acceso no autorizado. Redirigiendo a login.');
+        }
+
+        const listaPlatosMenu = [
+            "Pechuga Ranchera Gratinada",
+            "Lomo Saltado Callejero",
+            "Bifé Express con Maduro",
+            "Pechuga BBQ Crispy",
+            "Súper Desgranado de la Casa",
+            "Chimichangas de Pollo y Queso",
+            "Burrito Tex-Mex de Res",
+            "Hamburguesa Especial con Tocino",
+            'Hamburguesa "La Criolla"',
+            "Perro Suizo Gratinado",
+            "Salchipapa Especial El Garaje",
+            "Limonada de Coco Natural",
+            "Jugo Natural en Agua",
+            "Limonada Cerezada Natural",
+            "Gaseosa 350ml"
+        ];
+
+        function cargarTodo() {
+            cargarInventarioCocina();
+            cargarCocina();
+        }
+
+        function cargarInventarioCocina() {
+            const contenedor = document.getElementById('contenedorInventarioCocina');
+            contenedor.innerHTML = '';
+
+            let platosAgotados = JSON.parse(localStorage.getItem('platosAgotados') || '[]');
+
+            listaPlatosMenu.forEach(plato => {
+                let estaAgotado = platosAgotados.includes(plato);
+                let btnClase = estaAgotado ? 'btn-danger' : 'btn-outline-secondary';
+                let textoBtn = estaAgotado ? '❌ Agotado (Habilitar)' : '✔️ Disponible (Marcar Agotado)';
+
+                // Codificamos el plato de forma segura para evitar fallos con comillas
+                let platoEscapado = plato.replace(/"/g, '&quot;').replace(/'/g, "\\'");
+
+                contenedor.innerHTML += `
+                    <div class="col-md-4 col-sm-6">
+                        <div class="p-2 border rounded d-flex justify-content-between align-items-center bg-light">
+                            <span class="small fw-semibold text-truncate me-2" title="${plato}">${plato}</span>
+                            <button onclick="toggleAgotado('${platoEscapado}')" class="btn ${btnClase} btn-sm text-nowrap" style="font-size: 11px;">
+                                ${textoBtn}
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function toggleAgotado(nombrePlato) {
+            // Reemplazamos entidades HTML de vuelta por comillas si es necesario
+            let platoLimpio = nombrePlato.replace(/&quot;/g, '"');
+            let platosAgotados = JSON.parse(localStorage.getItem('platosAgotados') || '[]');
+            
+            if (platosAgotados.includes(platoLimpio)) {
+                platosAgotados = platosAgotados.filter(p => p !== platoLimpio);
+            } else {
+                platosAgotados.push(platoLimpio);
+            }
+
+            localStorage.setItem('platosAgotados', JSON.stringify(platosAgotados));
+            cargarInventarioCocina();
+        }
+
+        function cargarCocina() {
+            const contenedor = document.getElementById('contenedorCocina');
+            const alerta = document.getElementById('sinPedidosCocina');
+            contenedor.innerHTML = '';
+
+            let pedidos = JSON.parse(localStorage.getItem('pedidosRestaurante') || '[]');
+
+            if (pedidos.length === 0) {
+                alerta.classList.remove('d-none');
+                return;
+            }
+            alerta.classList.add('d-none');
+
+            pedidos.forEach(pedido => {
+                let itemsHtml = '';
+                pedido.items.forEach(item => {
+                    itemsHtml += `<li class="list-group-item d-flex justify-content-between align-items-center small">
+                        ${item.nombre} <span class="badge bg-secondary">x${item.cantidad}</span>
+                    </li>`;
+                });
+
+                let estadoCocina = pedido.estadoCocina || 'Pendiente';
+                let btnClase = estadoCocina === 'Listo' ? 'btn-success' : 'btn-warning text-dark';
+
+                contenedor.innerHTML += `
+                    <div class="col-md-4">
+                        <div class="card card-custom h-100 p-3">
+                            <h5 class="fw-bold text-danger">Mesa #${pedido.mesa}</h5>
+                            <p class="text-muted small">🕒 ${pedido.hora}</p>
+                            <ul class="list-group mb-3 border rounded">${itemsHtml}</ul>
+                            <div class="mt-auto d-grid">
+                                <button onclick="cambiarEstadoCocina(${pedido.id})" class="btn ${btnClase} btn-sm fw-bold">
+                                    Estado: ${estadoCocina} (Cambiar)
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function cambiarEstadoCocina(id) {
+            let pedidos = JSON.parse(localStorage.getItem('pedidosRestaurante') || '[]');
+            let p = pedidos.find(item => item.id === id);
+            if(p) {
+                p.estadoCocina = (p.estadoCocina === 'Listo') ? 'Pendiente' : 'Listo';
+                localStorage.setItem('pedidosRestaurante', JSON.stringify(pedidos));
+                cargarCocina();
+            }
+        }
+
+        function cerrarPedidosDelDia() {
+            if (confirm("¿Estás seguro de cerrar y eliminar todos los pedidos activos de la jornada? Esta acción no se puede deshacer.")) {
+                localStorage.removeItem('pedidosRestaurante');
+                cargarCocina();
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", cargarTodo);
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

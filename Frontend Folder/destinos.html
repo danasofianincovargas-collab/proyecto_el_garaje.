@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sedes - El Garaje</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons para los botones de favoritos -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Barra de Navegación Unificada -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom shadow-sm sticky-top" style="background-color: #212529;">
+        <div class="container">
+            <a class="navbar-brand fw-bold text-warning" href="index.html">🚗 El Garaje</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center gap-3">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link" href="menu.html">Menú</a></li>
+                    <li class="nav-item"><a class="nav-link active fw-bold text-warning" href="destinos.html">Sedes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="login.html">Personal</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenido Principal de Sedes -->
+    <div class="container my-5">
+        <div class="text-center mb-4">
+            <h1 class="fw-bold">📍 Nuestras Sedes en Bogotá</h1>
+            <p class="text-muted">Encuentra tu punto "El Garaje" más cercano y vive la experiencia urbana.</p>
+        </div>
+
+        <!-- Buscador Dinámico en Tiempo Real -->
+        <div class="row justify-content-center mb-4">
+            <div class="col-md-6">
+                <input type="text" id="inputBuscador" class="form-control form-control-lg shadow-sm" placeholder="🔍 Escribe para buscar una sede (ej. Norte, Centro)...">
+            </div>
+        </div>
+
+        <!-- Alerta de "No se encontraron resultados" (Oculta por defecto con d-none) -->
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div id="alertaSinResultados" class="alert alert-warning d-none text-center shadow-sm" role="alert">
+                    ⚠️ No se encontraron sedes coincidentes con tu búsqueda.
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenedor de Tarjetas -->
+        <div class="row g-4" id="contenedorTarjetas">
+            <!-- Sede 1 -->
+            <div class="col-md-4 card-destino">
+                <div class="card card-custom h-100 p-3 shadow-sm border-0 position-relative">
+                    <!-- Insignia Badge de Favorito (Oculta por defecto) -->
+                    <span class="badge bg-danger position-absolute top-0 end-0 m-3 badge-favorito d-none">Favorito</span>
+
+                    <img src="jpg/sede-norte.jpg" class="card-img-top rounded-3" alt="Sede Norte" style="height: 160px; object-fit: cover;">
+                    <div class="card-body d-flex flex-column px-0">
+                        <h5 class="fw-bold card-title">Sede Norte (Usaquén)</h5>
+                        <p class="text-muted small">Ambiente urbano, música en vivo los fines de semana y zona temática.</p>
+                        <ul class="list-unstyled small text-secondary mb-3">
+                            <li>🕒 <strong>Horario:</strong> 12:00 PM - 10:00 PM</li>
+                            <li>📞 <strong>Contacto:</strong> 310 456 7890</li>
+                        </ul>
+                        <div class="mt-auto d-flex flex-column gap-2">
+                            <button onclick="alert('📍 Dirección: Calle 140 # 15-20, Bogotá.')" class="btn btn-outline-dark w-100 btn-sm fw-bold">Ver Dirección</button>
+                            <button class="btn btn-outline-danger w-100 btn-sm fw-bold btn-favorito" data-id="sede-norte">🤍 Marcar Favorito</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sede 2 -->
+            <div class="col-md-4 card-destino">
+                <div class="card card-custom h-100 p-3 shadow-sm border-0 position-relative">
+                    <span class="badge bg-danger position-absolute top-0 end-0 m-3 badge-favorito d-none">Favorito</span>
+
+                    <img src="jpg/sede-centro.jpg" class="card-img-top rounded-3" alt="Sede Centro" style="height: 160px; object-fit: cover;">
+                    <div class="card-body d-flex flex-column px-0">
+                        <h5 class="fw-bold card-title">Sede Centro (La Macarena)</h5>
+                        <p class="text-muted small">El concepto original inspirado en el arte callejero y grafitis de la zona.</p>
+                        <ul class="list-unstyled small text-secondary mb-3">
+                            <li>🕒 <strong>Horario:</strong> 11:30 AM - 11:00 PM</li>
+                            <li>📞 <strong>Contacto:</strong> 320 123 4567</li>
+                        </ul>
+                        <div class="mt-auto d-flex flex-column gap-2">
+                            <button onclick="alert('📍 Dirección: Carrera 4 # 26-10, Bogotá.')" class="btn btn-outline-dark w-100 btn-sm fw-bold">Ver Dirección</button>
+                            <button class="btn btn-outline-danger w-100 btn-sm fw-bold btn-favorito" data-id="sede-centro">🤍 Marcar Favorito</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sede 3 -->
+            <div class="col-md-4 card-destino">
+                <div class="card card-custom h-100 p-3 shadow-sm border-0 position-relative">
+                    <span class="badge bg-danger position-absolute top-0 end-0 m-3 badge-favorito d-none">Favorito</span>
+
+                    <img src="jpg/sede-sur.jpg" class="card-img-top rounded-3" alt="Sede Sur" style="height: 160px; object-fit: cover;">
+                    <div class="card-body d-flex flex-column px-0">
+                        <h5 class="fw-bold card-title">Sede Sur (Bosa / Soacha Link)</h5>
+                        <p class="text-muted small">Ideal para parceros, zona amplia de descanso y pantalla gigante.</p>
+                        <ul class="list-unstyled small text-secondary mb-3">
+                            <li>🕒 <strong>Horario:</strong> 12:00 PM - 10:00 PM</li>
+                            <li>📞 <strong>Contacto:</strong> 315 987 6543</li>
+                        </ul>
+                        <div class="mt-auto d-flex flex-column gap-2">
+                            <button onclick="alert('📍 Dirección: Autopista Sur - Zona Comercial, Bogotá/Soacha.')" class="btn btn-outline-dark w-100 btn-sm fw-bold">Ver Dirección</button>
+                            <button class="btn btn-outline-danger w-100 btn-sm fw-bold btn-favorito" data-id="sede-sur">🤍 Marcar Favorito</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lógica de buscador y favoritos centralizada en script.js -->
+    <script src="script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

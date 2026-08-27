@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menú Digital - El Garaje</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { font-family: 'Poppins', sans-serif; background-color: #f8f9fa; }
+        .navbar-custom { background-color: #212529 !important; }
+        .card-custom { border: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: transform 0.2s; }
+        .card-custom:hover { transform: scale(1.02); }
+    </style>
+</head>
+<body>
+    <!-- Barra de Navegación Unificada -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom shadow-sm sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold text-warning" href="index.html">🚗 El Garaje</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center gap-3">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link active fw-bold text-warning" href="menu.html">Menú</a></li>
+                    <li class="nav-item"><a class="nav-link" href="destinos.html">Sedes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="login.html">Personal</a></li>
+                </ul>
+            </div>
+            <!-- Botones del carrito, confirmar y cancelar -->
+            <div class="d-flex align-items-center gap-2 ms-lg-3">
+                <button onclick="verResumenPedido()" class="btn btn-warning btn-sm fw-bold px-3" id="btnCarrito">
+                    🛒 Pedido: 0 | $0 COP
+                </button>
+                <button onclick="confirmarPedido()" class="btn btn-success btn-sm fw-bold px-3" id="btnConfirmarPedido">
+                    ✅ Confirmar
+                </button>
+                <button onclick="reiniciarPedido()" class="btn btn-outline-danger btn-sm text-light border-danger">Cancelar</button>
+            </div>
+        </div>
+    </nav>
+    <!-- Contenido Principal -->
+    <div class="container my-5">
+        <div class="text-center mb-4">
+            <h1 class="fw-bold">🍽️ Menú Casual & Urbano "El Garaje"</h1>
+            <p class="text-muted">Edición Bogotá - Selecciona tus platos y añádelos al pedido.</p>
+        </div>
+        <!-- Indicador dinámico del estado de cocina para el cliente -->
+        <div class="row justify-content-center mb-4">
+            <div class="col-md-6 text-center">
+                <div id="estadoCocinaCliente" class="alert alert-secondary d-none shadow-sm mb-0" role="alert">
+                    ⏳ Estado de tu pedido: <span id="textoEstadoCocina" class="fw-bold">Esperando confirmación...</span>
+                </div>
+            </div>
+        </div>
+        <!-- Buscador Dinámico en Tiempo Real -->
+        <div class="row justify-content-center mb-4">
+            <div class="col-md-6">
+                <input type="text" id="inputBuscador" class="form-control form-control-lg shadow-sm" placeholder="🔍 Busca un plato o bebida (ej. Pechuga, Hamburguesa, Limonada)...">
+            </div>
+        </div>
+        <!-- Alerta de "No se encontraron resultados" -->
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div id="alertaSinResultados" class="alert alert-warning d-none text-center shadow-sm" role="alert">
+                    ⚠️ No se encontraron platos o bebidas coincidentes con tu búsqueda.
+                </div>
+            </div>
+        </div>
+        <!-- SECCIÓN 1: Platos Casuales -->
+        <h3 class="fw-bold mb-4 text-secondary">🍗 1. Platos Casuales (Proteínas y Gratinados)</h3>
+        <div class="row g-4 mb-5">
+            <div class="col-md-3 card-destino" data-plato="Pechuga Ranchera Gratinada">
+                <div class="card card-custom h-100 p-3">
+                    <img src="jpg/pechuga-ranchera-gratinada.jpg" class="card-img-top rounded-3" alt="Pechuga Ranchera Gratinada" style="height: 160px; object-fit: cover;">
+                    <div class="card-body d-flex flex-column px-0">
+                        <h6 class="fw-bold card-title">Pechuga Ranchera Gratinada</h6>
+                        <p class="text-muted small">Pollo, doble crema, salchicha, tocino, maíz y papa francesa.</p>
+                        <div class="mt-auto">
+                            <span class="fw-bold text-dark d-block mb-2">$17.900 COP</span>
+                            <button onclick="agregarAlPedido('Pechuga Ranchera Gratinada', 17900)" class="btn btn-warning w-100 btn-sm fw-bold">Añadir al pedido</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 card-destino" data-plato="Lomo Saltado Callejero">
+                <div class="card card-custom h-100 p-3">
+                    <img src="jpg/lomo-saltado-callejero.jpg" class="card-img-top rounded-3" alt="Lomo Saltado" style="height: 160px; object-fit: cover;">
+                    <div class="card-body d-flex flex-column px-0">
+                        <h6 class="fw-bold card-title">Lomo Saltado Callejero</h6>
+                        <p class="text-muted small">Lomo picado, cebolla, tomate, salsa de soya, arroz y papas.</p>
+                        <div class="mt-auto">
+                            <span class="fw-bold text-dark d-block mb-2">$18.500 COP</span>
+                            <button onclick="agregarAlPedido('Lomo Saltado Callejero', 18500)" class="btn btn-warning w-100 btn-sm fw-bold">Añadir al pedido</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 card-destino" data-plato="Bifé Express con Maduro">
+                <div class="card card-custom h-100 p-3">
+                    <img src="jpg/bife-express-con-maduro.jpg" class="card-img-top rounded-3" alt="Bifé Express" style="height: 160px; object-fit: cover;">
+                    <div class="card-body d-flex flex-column px-0">
+                        <h6 class="fw-bold card-title">Bifé Express con Maduro</h6>
+                        <p class="text-muted small">Filete de res, arroz blanco, papa francesa y plátano maduro.</p>
+                        <div class="mt-auto">
+                            <span class="fw-bold text-dark d-block mb-2">$16.900 COP</span>
+                            <button onclick="agregarAlPedido('Bifé Express con Maduro', 16900)" class="btn btn-warning w-100 btn-sm fw-bold">Añadir al pedido</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 card-destino" data-plato="Pechuga BBQ Crispy">
+                <div class="card card-custom h-100 p-3">
+                    <img src="jpg/pechuga-bbq-crispy.jpg" class="card-img-top rounded-3" alt="Pechuga BBQ Crispy" style="height: 160px; object-fit: cover;">
+                    <div class="card-body d-flex flex-column px-0">
+                        <h6 class="fw-bold card-title">Pechuga BBQ Crispy</h6>
+                        <p class="text-muted small">Pechuga apanada base, salsa BBQ y papas a la francesa.</p>
+                        <div class="mt-auto">
+                            <span class="fw-bold text-dark d-block mb-2">$15.900 COP</span>
+                            <button onclick="agregarAlPedido('Pechuga BBQ Crispy', 15900)" class="btn btn-warning w-100 btn-sm fw-bold">Añadir al pedido</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- SECCIÓN 2: Desgranados y Mexican Fast-Casual -->
+        <h3 class="fw-bold mb-4 text-secondary">🫓 2. Desgranados y Mexican Fast-Casual</h3>
+        <div class="row g-4 mb-5">
+            <div class="col-md-4 card-destino" data-plato="Súper Desgranado de la Casa">
+                <div class="card card-custom h-100 p-3">
+                    <img src="jpg/super-desgranado-de-la-casa.jpg" class="card-img-top rounded-3" alt="Súper Desgranado" style="height: 160px; object-fit: cover;">
+                    <div class="card-body d-flex flex-column px-0">
+                        <h6 class="fw-bold card-title">Súper Desgranado de la Casa</h6>
+                        <p class="text-muted small">Maíz, pollo, res en cubos, ripio, queso costeño y salsas.</p>
+                        <div class="mt-auto">
+                            <span class="fw-bold text-dark d-block mb-2">$14.500 COP</span>
+                            <button onclick="agregarAlPedido('Súper Desgranado de la Casa', 14500)" class="btn btn-warning w-100 btn-sm fw-bold">Añadir al pedido</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 card-destino" data-plato="Chimichangas de Pollo y Queso">
+                <div class="card card-custom h-100 p-3">
+                    <img src="jpg/chimichangas-de-pollo-y-queso.jpg" class="card-img-top rounded-3" alt="Chimichangas" style="height: 160px; object-fit: cover;">
+                    <div class="card-body d-flex flex-column px-0">
+                        <h6 class="fw-bold card-title">Chimichangas de Pollo y Queso (2 un.)</h6>
+                        <p class="text-muted small">Tortillas de trigo, pollo desmechado, doble crema y guacamole.</p>
+                        <div class="mt-auto">
+                            <span class="fw-bold text-dark d-block mb-2">$12.900 COP</span>
+                            <button onclick="agregarAlPedido('Chimichangas de Pollo y Queso', 12900)" class="btn btn-warning w-100 btn-sm fw-bold">Añadir al pedido</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 card-destino" data-plato="Burrito Tex-Mex de Res">
+                <div class="card card-custom h-100 p-3">
+                    <img src="jpg/burrito-tex-mex-de-res.jpg" class="card-img-top rounded-3" alt="Burrito Tex-Mex" style="height: 160px; object-fit: cover;">
+                    <div class="card-body d-flex flex-column px-0">
+                        <h6 class="fw-bold card-title">Burrito Tex-Mex de Res</h6>
+                        <p class="text-muted small">Tortilla grande, carne molida, arroz, frijol, maíz y queso.</p>
+                        <div class="mt-auto">
+                            <span class="fw-bold text-dark d-block mb-2">$14.900 COP</span>
+                            <button onclick="agregarAlPedido('Burrito Tex-Mex de Res', 14900)" class="btn btn-warning w-100 btn-sm fw-bold">Añadir al pedido</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- SECCIÓN 3: Los Clásicos Urbanos -->
+        <h3 class="fw-bold mb-4 text-secondary">🍔 3. Los Clásicos Urbanos (Comida Rápida)</h3>
+        <div class="row g-4 mb-5">
+            <div class="col-md-3 card-destino" data-plato="Hamburguesa Especial con Tocino">
+                <div class="card card-custom h-100 p-3">
+                    <img src="jpg/hamburguesa-especial-con-tocino.jpg" class="card-img-top rounded-3" alt="Hamburguesa Especial" style="height: 160px; object-fit: cover;">
+                    <div class="card-body d-flex flex-column px-0">
+                        <h6 class="fw-bold card-title">Hamburguesa Especial con Tocino</h6>
+                        <p class="text-muted small">Pan, carne 100g, doble crema, tocino, vegetales y papas.</p>
+                        <div class="mt-auto">
+                            <span class="fw-bold text-dark d-block mb-2">$15.500 COP</span>
+                            <button onclick="agregarAlPedido('Hamburguesa Especial con Tocino', 15500)" class="btn btn-warning w-100 btn-sm fw-bold">Añadir al pedido</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 card-destino" data-plato='Hamburguesa "La Criolla"'>
+                <div class="card card-custom h-100 p-3">
+                    <img src="jpg/hamburguesa-la-criolla.jpg" class="card-img-top rounded-3" alt="Hamburguesa La Criolla" style="height: 160px; object-fit: cover;">
+                    <div class="card-body d-flex flex-column px-0">
+                        <h6 class="fw-bold card-title">Hamburguesa "La Criolla"</h6>
+                        <p class="text-muted small">Carne 100g, doble crema, plátano maduro frito y papas.</p>
+                        <div class="mt-auto">
+                            <span class="fw-bold text-dark d-block mb-2">$14.900 COP</span>
+                            <button onclick="agregarAlPedido('Hamburguesa La Criolla', 14900)" class="btn btn-warning w-100 btn-sm fw-bold">Añadir al pedido</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 card-destino" data-plato="Perro Suizo Gratinado">
+                <div class="card card-custom h-100 p-3">
+                    <img src="jpg/perro-suizo-gratinado.jpg" class="card-img-top rounded-3" alt="Perro Suizo" style="height: 160px; object-fit: cover;">
+                    <div class="card-body d-flex flex-column px-0">
+                        <h6 class="fw-bold card-title">Perro Suizo Gratinado</h6>
+                        <p class="text-muted small">Pan de perro, salchicha suiza, doble crema fundida y ripio.</p>
+                        <div class="mt-auto">
+                            <span class="fw-bold text-dark d-block mb-2">$13.500 COP</span>
+                            <button onclick="agregarAlPedido('Perro Suizo Gratinado', 13500)" class="btn btn-warning w-100 btn-sm fw-bold">Añadir al pedido</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 card-destino" data-plato="Salchipapa Especial El Garaje">
+                <div class="card card-custom h-100 p-3">
+                    <img src="jpg/salchipapa-especial-el-garaje.jpg" class="card-img-top rounded-3" alt="Salchipapa Especial" style="height: 160px; object-fit: cover;">
+                    <div class="card-body d-flex flex-column px-0">
+                        <h6 class="fw-bold card-title">Salchipapa Especial "El Garaje"</h6>
+                        <p class="text-muted small">Papas, salchicha manguera, pollo en cubos, queso y maíz.</p>
+                        <div class="mt-auto">
+                            <span class="fw-bold text-dark d-block mb-2">$15.900 COP</span>
+                            <button onclick="agregarAlPedido('Salchipapa Especial El Garaje', 15900)" class="btn btn-warning w-100 btn-sm fw-bold">Añadir al pedido</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- SECCIÓN 4: Bebidas Refrescantes -->
+        <h3 class="fw-bold mb-4 text-secondary">🥤 4. Bebidas Refrescantes</h3>
+        <div class="row g-4">
+            <div class="col-md-3 card-destino" data-plato="Limonada de Coco Natural">
+                <div class="card card-custom h-100 p-3">
+                    <img src="jpg/limonada-de-coco-natural.jpg" class="card-img-top rounded-3" alt="Limonada de Coco" style="height: 160px; object-fit: cover;">
+                    <div class="card-body d-flex flex-column px-0">
+                        <h6 class="fw-bold card-title">Limonada de Coco Natural</h6>
+                        <p class="text-muted small">Limón, crema de coco, leche, azúcar y hielo frappé.</p>
+                        <div class="mt-auto">
+                            <span class="fw-bold text-dark d-block mb-2">$7.500 COP</span>
+                            <button onclick="agregarAlPedido('Limonada de Coco Natural', 7500)" class="btn btn-warning w-100 btn-sm fw-bold">Añadir al pedido</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 card-destino" data-plato="Jugo Natural en Agua">
+                <div class="card card-custom h-100 p-3">
+                    <img src="jpg/jugo-natural-en-agua.jpg" class="card-img-top rounded-3" alt="Jugo Natural" style="height: 160px; object-fit: cover;">
+                    <div class="card-body d-flex flex-column px-0">
+                        <h6 class="fw-bold card-title">Jugo Natural en Agua (Mora/Mango)</h6>
+                        <p class="text-muted small">Pulpa de fruta natural en agua con toque de azúcar.</p>
+                        <div class="mt-auto">
+                            <span class="fw-bold text-dark d-block mb-2">$4.500 COP</span>
+                            <button onclick="agregarAlPedido('Jugo Natural en Agua', 4500)" class="btn btn-warning w-100 btn-sm fw-bold">Añadir al pedido</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 card-destino" data-plato="Limonada Cerezada Natural">
+                <div class="card card-custom h-100 p-3">
+                    <img src="jpg/limonada-cerezada-natural.jpg" class="card-img-top rounded-3" alt="Limonada Cerezada" style="height: 160px; object-fit: cover;">
+                    <div class="card-body d-flex flex-column px-0">
+                        <h6 class="fw-bold card-title">Limonada Cerezada Natural</h6>
+                        <p class="text-muted small">Limón, cerezas, jarabe especial y hielo.</p>
+                        <div class="mt-auto">
+                            <span class="fw-bold text-dark d-block mb-2">$6.500 COP</span>
+                            <button onclick="agregarAlPedido('Limonada Cerezada Natural', 6500)" class="btn btn-warning w-100 btn-sm fw-bold">Añadir al pedido</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 card-destino" data-plato="Gaseosa 350ml">
+                <div class="card card-custom h-100 p-3">
+                    <img src="jpg/gaseosa-350ml.jpg" class="card-img-top rounded-3" alt="Gaseosa" style="height: 160px; object-fit: cover;">
+                    <div class="card-body d-flex flex-column px-0">
+                        <h6 class="fw-bold card-title">Gaseosa 350ml (PET)</h6>
+                        <p class="text-muted small">Postobón o Coca-Cola en presentación personal.</p>
+                        <div class="mt-auto">
+                            <span class="fw-bold text-dark d-block mb-2">$3.500 COP</span>
+                            <button onclick="agregarAlPedido('Gaseosa 350ml', 3500)" class="btn btn-warning w-100 btn-sm fw-bold">Añadir al pedido</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal de Factura para el Cliente -->
+    <div class="modal fade" id="modalFactura" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title fw-bold">🧾 Factura de tu Pedido - El Garaje</h5>
+                </div>
+                <div class="modal-body p-4" id="cuerpoFactura">
+                    <!-- Se llena dinámicamente -->
+                </div>
+                <div class="modal-footer">
+                    <button onclick="cerrarFacturaCliente()" class="btn btn-warning w-100 fw-bold">Entendido / Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Script Completo -->
+    <script>
+        let cantidadItems = 0;
+        let precioTotal = 0;
+        let detallesPedido = [];
+        let idPedidoActual = null;
+        function agregarAlPedido(nombrePlato, precio) {
+            let agotados = JSON.parse(localStorage.getItem('platosAgotados') || '[]');
+            if (agotados.includes(nombrePlato)) {
+                alert(`❌ Lo sentimos, "${nombrePlato}" está agotado en este momento.`);
+                return;
+            }
+            cantidadItems++;
+            precioTotal += precio;
+
+            let itemExistente = detallesPedido.find(i => i.nombre === nombrePlato);
+            if(itemExistente) {
+                itemExistente.cantidad++;
+                itemExistente.subtotal += precio;
+            } else {
+                detallesPedido.push({ nombre: nombrePlato, precio: precio, cantidad: 1, subtotal: precio });
+            }
+            document.getElementById('btnCarrito').innerText = `🛒 Pedido: ${cantidadItems} | $${precioTotal.toLocaleString()} COP`;
+        }
+        function confirmarPedido() {
+            if (cantidadItems === 0 || detallesPedido.length === 0) {
+                alert("⚠️ Todavía no tienes ningún plato en tu pedido para confirmar.");
+                return;
+            }
+            let confirmarAccion = confirm("¿Estás segura de que deseas confirmar tu pedido?");
+
+            if (confirmarAccion) {
+                let mesa = prompt("Por favor, ingresa el número de tu mesa (ej. 1, 2, 3...):", "1");
+                if (!mesa) return;
+                let pedidosActivos = JSON.parse(localStorage.getItem('pedidosRestaurante') || '[]');
+
+                idPedidoActual = Date.now();
+                let nuevoPedido = {
+                    id: idPedidoActual,
+                    mesa: mesa,
+                    items: [...detallesPedido],
+                    total: precioTotal,
+                    estadoPago: 'Pendiente',
+                    estadoCocina: 'En proceso',
+                    hora: new Date().toLocaleTimeString()
+                };
+                pedidosActivos.push(nuevoPedido);
+                localStorage.setItem('pedidosRestaurante', JSON.stringify(pedidosActivos));
+                let mesasEstado = JSON.parse(localStorage.getItem('mesasEstado') || '{}');
+                mesasEstado[mesa] = 'Ocupada';
+                localStorage.setItem('mesasEstado', JSON.stringify(mesasEstado));
+                alert("Pedido confirmado y enviado a cocina.");
+                // CAMBIO DE ESTILO Y TEXTO AL CONFIRMAR
+                let btnConfirmar = document.getElementById('btnConfirmarPedido');
+                btnConfirmar.innerHTML = "⏳ Pedido en proceso";
+                btnConfirmar.classList.remove('btn-success');
+                btnConfirmar.classList.add('btn-secondary');
+                // Mostrar barra de estado de cocina
+                let alertaEstado = document.getElementById('estadoCocinaCliente');
+                alertaEstado.classList.remove('d-none', 'alert-secondary', 'alert-success');
+                alertaEstado.classList.add('alert-warning');
+                document.getElementById('textoEstadoCocina').innerText = "Cocinando en proceso...";
+                // Limpiar carrito tras confirmar
+                cantidadItems = 0;
+                precioTotal = 0;
+                detallesPedido = [];
+                document.getElementById('btnCarrito').innerText = `🛒 Pedido: 0 | $0 COP`;
+            }
+        }
+        // Monitorear el estado del pedido actual (Cocina y Facturación)
+        setInterval(() => {
+            if (!idPedidoActual) return;
+            let pedidosActivos = JSON.parse(localStorage.getItem('pedidosRestaurante') || '[]');
+            let miPedido = pedidosActivos.find(p => p.id === idPedidoActual);
+            if (miPedido && miPedido.estadoCocina === 'Listo') {
+                let alertaEstado = document.getElementById('estadoCocinaCliente');
+                alertaEstado.classList.remove('alert-warning', 'alert-secondary');
+                alertaEstado.classList.add('alert-success');
+                document.getElementById('textoEstadoCocina').innerText = "🟢 ¡Tu pedido está listo y salió de cocina!";
+            }
+            // Revisar si el mesero ya generó la factura para mostrarla
+            let facturaActual = JSON.parse(localStorage.getItem('facturaCliente') || 'null');
+            if (facturaActual && facturaActual.id === idPedidoActual && sessionStorage.getItem('facturaVista_' + idPedidoActual) !== 'true') {
+                mostrarFacturaEnMenu(facturaActual);
+            }
+        }, 2000);
+        function mostrarFacturaEnMenu(factura) {
+            sessionStorage.setItem('facturaVista_' + factura.id, 'true');
+            let htmlItems = '';
+            factura.items.forEach(i => {
+                htmlItems += `<li class="d-flex justify-content-between small py-1 border-bottom">
+                    <span>${i.nombre} (x${i.cantidad})</span>
+                    <span>$${i.subtotal.toLocaleString()} COP</span>
+                </li>`;
+            });
+            let contenido = `
+                <div class="text-center mb-3">
+                    <h6 class="fw-bold text-success">¡Pedido Entregado con Éxito!</h6>
+                    <p class="text-muted small mb-1">Mesa #${factura.mesa} - Factura #${factura.id}</p>
+                    <p class="text-muted small">Hora: ${factura.hora}</p>
+                </div>
+                <ul class="list-unstyled mb-3" style="max-height: 160px; overflow-y: auto;">
+                    ${htmlItems}
+                </ul>
+                <div class="d-flex justify-content-between fw-bold fs-5 border-top pt-2">
+                    <span>Total a Pagar:</span>
+                    <span class="text-success">$${factura.total.toLocaleString()} COP</span>
+                </div>
+            `;
+            document.getElementById('cuerpoFactura').innerHTML = contenido;
+            let modal = new bootstrap.Modal(document.getElementById('modalFactura'));
+            modal.show();
+        }
+        function cerrarFacturaCliente() {
+            let modalElement = document.getElementById('modalFactura');
+            let modal = bootstrap.Modal.getInstance(modalElement);
+            if(modal) modal.hide();
+            localStorage.removeItem('facturaCliente');
+
+            // Ocultar barra de estado y resetear botón confirmar
+            document.getElementById('estadoCocinaCliente').classList.add('d-none');
+            let btnConfirmar = document.getElementById('btnConfirmarPedido');
+            btnConfirmar.innerHTML = "✅ Confirmar";
+            btnConfirmar.classList.remove('btn-secondary');
+            btnConfirmar.classList.add('btn-success');
+            idPedidoActual = null;
+        }
+        function reiniciarPedido() {
+            let confirmar = confirm("¿Estás segura de que deseas cancelar y vaciar tu pedido actual?");
+            if (confirmar) {
+                cantidadItems = 0;
+                precioTotal = 0;
+                detallesPedido = [];
+                document.getElementById('btnCarrito').innerText = `🛒 Pedido: 0 | $0 COP`;
+
+                let btnConfirmar = document.getElementById('btnConfirmarPedido');
+                btnConfirmar.innerHTML = "✅ Confirmar";
+                btnConfirmar.classList.remove('btn-secondary');
+                btnConfirmar.classList.add('btn-success');
+                document.getElementById('estadoCocinaCliente').classList.add('d-none');
+                idPedidoActual = null;
+                alert("🗑️ Tu pedido ha sido cancelado con éxito.");
+            }
+        }
+        function verResumenPedido() {
+            if (cantidadItems === 0) {
+                alert("Tu carrito está vacío.");
+            } else {
+                let mensaje = "📋 Resumen de tu pedido:\n";
+                detallesPedido.forEach((item, index) => {
+                    mensaje += `${index + 1}. ${item.nombre} (x${item.cantidad}) - $${item.subtotal.toLocaleString()} COP\n`;
+                });
+                mensaje += `\nTotal a Pagar: $${precioTotal.toLocaleString()} COP`;
+                alert(mensaje);
+            }
+        }
+        // Disponibilidad de platos: refleja lo que Cocina marca como agotado (platosAgotados)
+        function actualizarDisponibilidadMenu() {
+            let agotados = JSON.parse(localStorage.getItem('platosAgotados') || '[]');
+            document.querySelectorAll('[data-plato]').forEach((tarjeta) => {
+                let nombrePlato = tarjeta.getAttribute('data-plato');
+                let boton = tarjeta.querySelector('button.btn-warning, button.btn-secondary');
+                if (!boton) return;
+                let badgeExistente = tarjeta.querySelector('.badge-agotado');
+                if (agotados.includes(nombrePlato)) {
+                    boton.disabled = true;
+                    boton.classList.remove('btn-warning');
+                    boton.classList.add('btn-secondary');
+                    boton.innerText = '❌ Agotado';
+                    if (!badgeExistente) {
+                        let badge = document.createElement('span');
+                        badge.className = 'badge bg-danger badge-agotado mb-2 d-inline-block';
+                        badge.innerText = 'Agotado en cocina';
+                        boton.parentElement.insertBefore(badge, boton);
+                    }
+                } else {
+                    boton.disabled = false;
+                    boton.classList.remove('btn-secondary');
+                    boton.classList.add('btn-warning');
+                    boton.innerText = 'Añadir al pedido';
+                    if (badgeExistente) badgeExistente.remove();
+                }
+            });
+        }
+        actualizarDisponibilidadMenu();
+        setInterval(actualizarDisponibilidadMenu, 3000);
+    </script>
+    <!-- Buscador dinámico centralizado en script.js -->
+    <script src="script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+:root {
+    --bg-color: #f7f5f0;
+    --card-bg: #ffffff;
+    --primary: #c8963e;
+    --primary-hover: #b08232;
+    --text-main: #2b2b2b;
+    --text-muted: #737373;
+    --border-color: #eae5dc;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.navbar-custom {
+    background-color: var(--text-main) !important;
+}
+
+.navbar-custom .navbar-brand, 
+.navbar-custom .nav-link {
+    color: #ffffff !important;
+    font-weight: 500;
+}
+
+.navbar-custom .nav-link:hover {
+    color: var(--primary) !important;
+}
+
+.card-custom {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-custom:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
+}
+
+.btn-primary-custom {
+    background-color: var(--primary);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-weight: 600;
+    transition: background-color 0.2s;
+}
+
+.btn-primary-custom:hover {
+    background-color: var(--primary-hover);
+    color: #ffffff;
+}
+
+.form-control {
+    border-radius: 8px;
+    padding: 11px;
+    border: 1px solid var(--border-color);
+}
+
+.form-control:focus {
+    box-shadow: 0 0 0 0.2rem rgba(200, 150, 62, 0.25);
+    border-color: var(--primary);
+}

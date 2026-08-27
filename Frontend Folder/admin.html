@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Operaciones - El Garaje (Edición Bogotá)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { font-family: 'Poppins', sans-serif; background-color: #f4f6f9; }
+        .navbar-custom { background-color: #1a1d20 !important; }
+        .card-custom { border: none; box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075); border-radius: 0.75rem; transition: transform 0.2s; }
+        .card-custom:hover { transform: translateY(-2px); }
+        .table-custom th { background-color: #212529; color: #fff; font-weight: 500; }
+    </style>
+</head>
+<body class="bg-light">
+    <!-- Barra Superior -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom shadow-sm px-4 sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold text-warning" href="#">🚗 El Garaje - Panel Interno</a>
+            <div class="d-flex align-items-center gap-3">
+                <span id="labelRolUsuario" class="text-light badge bg-secondary px-3 py-2">Cargando rol...</span>
+                <a href="#" onclick="cerrarSesion(); return false;" class="btn btn-outline-light btn-sm fw-bold">Cerrar Sesión</a>
+            </div>
+        </div>
+    </nav>
+    <div class="container my-5">
+        <!-- ================= VISTA ADMINISTRADOR ================= -->
+        <div id="seccionAdmin" class="d-none">
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+                <div>
+                    <h2 class="fw-bold mb-1 text-dark">👑 Panel de Administración General</h2>
+                    <p class="text-muted mb-0">Control financiero, métricas en tiempo real y gestión operativa.</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <button onclick="guardarCorteFecha()" class="btn btn-success btn-sm fw-bold px-3 shadow-sm">💾 Guardar Corte por Fecha</button>
+                    <button onclick="reiniciarTotal()" class="btn btn-outline-danger btn-sm fw-bold px-3">🔄 Reiniciar Total de Caja</button>
+                </div>
+            </div>
+
+            <!-- Métricas Financieras y Estado -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-4">
+                    <div class="card card-custom p-4 bg-white border-start border-success border-4 h-100">
+                        <h6 class="text-muted small text-uppercase fw-bold mb-1">Dinero Acumulado (Ventas)</h6>
+                        <h3 class="fw-bold text-success mb-1" id="adminDineroAcumulado">$0 COP</h3>
+                        <small class="text-muted">Sincronizado en tiempo real</small>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card card-custom p-4 bg-white border-start border-primary border-4 h-100">
+                        <h6 class="text-muted small text-uppercase fw-bold mb-1">Mesas Ocupadas / Libres</h6>
+                        <h3 class="fw-bold text-primary mb-1" id="adminEstadoMesas">Calculando...</h3>
+                        <small class="text-muted">Control de aforo activo (8 Mesas)</small>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card card-custom p-4 bg-white border-start border-danger border-4 h-100">
+                        <h6 class="text-muted small text-uppercase fw-bold mb-1">Alertas de Cocina</h6>
+                        <h3 class="fw-bold text-danger mb-1" id="adminAlertasCocina">0 Platos Agotados</h3>
+                        <small class="text-muted">Revisar inventario de insumos</small>
+                    </div>
+                </div>
+            </div>
+            <!-- Control de Cuentas Activas por Mesa (Adiciones y Cobros) -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card card-custom p-4 bg-white border-top border-warning border-4">
+                        <h5 class="fw-bold mb-1 text-dark">🧾 Control de Cuentas Activas por Mesa (Adiciones y Cobros)</h5>
+                        <p class="text-muted small mb-3">Supervisa el acumulado por mesa, agrega nuevos platos o procesa el cobro y cierre definitivo.</p>
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle text-center small mb-0">
+                                <thead class="table-custom">
+                                    <tr>
+                                        <th>Mesa</th>
+                                        <th>Estado Actual</th>
+                                        <th>Cuenta Acumulada</th>
+                                        <th>Acciones (Adición / Cobro)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tablaCuentasAdmin">
+                                    <!-- Generado por JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Historial Guardado por Fechas con botón de eliminar (X) -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card card-custom p-4 bg-white">
+                        <h5 class="fw-bold mb-3 text-dark">📅 Historial de Cortes Guardados por Fecha</h5>
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle text-center small mb-0">
+                                <thead class="table-custom">
+                                    <tr>
+                                        <th>Fecha y Hora del Corte</th>
+                                        <th>Total Acumulado Registrado</th>
+                                        <th>Acción (Eliminar)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tablaHistorialCortes">
+                                    <tr><td colspan="3" class="text-muted py-3">No hay cortes guardados todavía.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Control de Inventario y Menú Completo -->
+            <div class="row g-4 mb-4">
+                <div class="col-12">
+                    <div class="card card-custom p-4 bg-white">
+                        <h5 class="fw-bold mb-3 text-dark">📦 Control de Inventario e Insumos por Plato ("El Garaje" Bogotá)</h5>
+                        <div class="accordion" id="accordionInventario"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- Estado General de las 8 Mesas -->
+            <div class="row g-4">
+                <div class="col-12">
+                    <div class="card card-custom p-4 bg-white">
+                        <h5 class="fw-bold mb-3 text-dark">🪑 Estado General de las 8 Mesas</h5>
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle text-center small mb-0">
+                                <thead class="table-custom">
+                                    <tr>
+                                        <th>Mesa</th>
+                                        <th>Estado Actual</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tablaMesesAdmin">
+                                    <!-- Generado por JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Lógica de sesión y protección de vista centralizada en script.js -->
+    <script src="script.js"></script>
+    <!-- Script Principal -->
+    <script>
+        const menuInsumos = [
+            { id: 1, seccion: "Platos Casuales", nombre: "Pechuga Ranchera Gratinada", precio: 17900, items: [
+                "INV-019 Pechuga de Pollo Filete: 0.150 kg", "INV-003 Queso Doble Crema: 0.040 kg", "INV-027 Salchicha Manguera: 0.040 kg", "INV-009 Tocino Ahumado: 0.020 kg", "INV-018 Maíz Tierno: 0.025 kg", "INV-007 Papa a la Francesa: 0.150 kg", "INV-046 Contenedor: 1 und"
+            ]},
+            { id: 2, seccion: "Platos Casuales", nombre: "Lomo Saltado Callejero", precio: 18500, items: [
+                "INV-020 Carne de Res: 0.130 kg", "INV-015 Cebolla Cabezona: 0.040 kg", "INV-005 Tomate Chonto: 0.050 kg", "INV-048 Salsa de Soya: 0.015 L", "INV-044 Arroz Blanco: 0.120 kg", "INV-007 Papa a la Francesa: 0.120 kg", "INV-046 Contenedor: 1 und"
+            ]},
+            { id: 3, seccion: "Platos Casuales", nombre: "Bifé Express con Maduro", precio: 16900, items: [
+                "INV-020 Carne de Res (Filete): 0.140 kg", "INV-044 Arroz Blanco: 0.120 kg", "INV-007 Papa a la Francesa: 0.100 kg", "INV-010 Plátano Maduro: 0.050 kg", "INV-046 Contenedor: 1 und"
+            ]},
+            { id: 4, seccion: "Platos Casuales", nombre: "Pechuga BBQ Crispy", precio: 15900, items: [
+                "INV-019 Pechuga de Pollo: 0.140 kg", "INV-049 Apanado Base: 0.030 kg", "INV-050 Salsa BBQ: 0.035 kg", "INV-007 Papa a la Francesa: 0.150 kg", "INV-046 Contenedor: 1 und"
+            ]},
+            { id: 5, seccion: "Desgranados", nombre: "Súper Desgranado de la Casa", precio: 14500, items: [
+                "INV-018 Maíz Tierno: 0.100 kg", "INV-019 Pechuga Cubos: 0.060 kg", "INV-020 Res Cubos: 0.060 kg", "INV-014 Ripio de Papa: 0.020 kg", "INV-021 Queso Costeño: 0.020 kg", "INV-006 Salsas: 0.030 kg", "INV-022 Envase Hondo: 1 und"
+            ]},
+            { id: 6, seccion: "Desgranados", nombre: "Chimichangas de Pollo y Queso", precio: 12900, items: [
+                "INV-023 Tortilla Trigo: 2 und", "INV-024 Pollo Desmechado: 0.080 kg", "INV-003 Queso Doble Crema: 0.040 kg", "INV-025 Guacamole: 0.050 kg", "INV-022 Envase Hondo: 1 und"
+            ]},
+            { id: 7, seccion: "Desgranados", nombre: "Burrito Tex-Mex de Res", precio: 14900, items: [
+                "INV-051 Tortilla Grande: 1 und", "INV-002 Carne Molida: 0.080 kg", "INV-044 Arroz Blanco: 0.040 kg", "INV-052 Frijol Cocido: 0.040 kg", "INV-018 Maíz Tierno: 0.020 kg", "INV-003 Queso Doble Crema: 0.030 kg", "INV-008 Aluminio: 1 und"
+            ]},
+            { id: 8, seccion: "Clásicos Urbanos", nombre: "Hamburguesa Especial con Tocino", precio: 15500, items: [
+                "INV-001 Pan Hamburguesa: 1 und", "INV-002 Carne Molida: 0.100 kg", "INV-003 Queso Doble Crema: 0.030 kg", "INV-009 Tocino: 0.025 kg", "INV-004 Lechuga y Tomate: 0.030 kg", "INV-007 Papa a la Francesa: 0.100 kg", "INV-008 Bolsa Kraft: 1 und"
+            ]},
+            { id: 9, seccion: "Clásicos Urbanos", nombre: 'Hamburguesa "La Criolla"', precio: 14900, items: [
+                "INV-001 Pan Hamburguesa: 1 und", "INV-002 Carne Molida: 0.100 kg", "INV-003 Queso Doble Crema: 0.030 kg", "INV-010 Plátano Maduro Cubos: 0.040 kg", "INV-007 Papa a la Francesa: 0.100 kg", "INV-008 Bolsa Kraft: 1 und"
+            ]},
+            { id: 10, seccion: "Clásicos Urbanos", nombre: "Perro Suizo Gratinado", precio: 13500, items: [
+                "INV-012 Pan de Perro: 1 und", "INV-017 Salchicha Suiza: 1 und", "INV-003 Queso Doble Crema: 0.035 kg", "INV-014 Ripio de Papa: 0.015 kg", "INV-006 Salsas: 0.020 kg", "INV-016 Barqueta: 1 und"
+            ]},
+            { id: 11, seccion: "Clásicos Urbanos", nombre: "Salchipapa Especial El Garaje", precio: 15900, items: [
+                "INV-007 Papa a la Francesa: 0.200 kg", "INV-027 Salchicha Manguera: 1.5 und", "INV-019 Pechuga Cubos: 0.050 kg", "INV-003 Queso Doble Crema: 0.035 kg", "INV-018 Maíz Tierno: 0.025 kg", "INV-022 Envase Hondo: 1 und"
+            ]},
+            { id: 12, seccion: "Bebidas", nombre: "Limonada de Coco Natural", precio: 7500, items: [
+                "INV-029 Limón: 2 und", "INV-030 Crema de Coco: 0.040 L", "INV-031 Leche: 0.080 L", "INV-032 Azúcar: 0.020 kg", "INV-033 Hielo: 0.150 kg", "INV-034 Vaso 16oz: 1 und"
+            ]},
+            { id: 13, seccion: "Bebidas", nombre: "Jugo Natural en Agua", precio: 4500, items: [
+                "INV-037 Pulpa de Fruta: 0.090 kg", "INV-032 Azúcar: 0.025 kg", "INV-034 Vaso 16oz: 1 und"
+            ]},
+            { id: 14, seccion: "Bebidas", nombre: "Limonada Cerezada Natural", precio: 6500, items: [
+                "INV-029 Limón: 2 und", "INV-035 Jarabe Cereza: 0.030 kg", "INV-032 Azúcar: 0.020 kg", "INV-034 Vaso 16oz: 1 und"
+            ]},
+            { id: 15, seccion: "Bebidas", nombre: "Gaseosa 350ml", precio: 3500, items: [
+                "INV-036 Gaseosa 350ml: 1 und"
+            ]}
+        ];
+        // Protección real: exige haber pasado el login con rol "admin".
+        // Sin esto, cualquiera entraba solo escribiendo la URL.
+        const usuarioActivo = protegerVista('admin');
+        if (!usuarioActivo) {
+            throw new Error('Acceso no autorizado. Redirigiendo a login.');
+        }
+        const rol = 'admin';
+        document.getElementById("labelRolUsuario").innerText = `${usuarioActivo.nombre} (ADMIN)`;
+        document.getElementById("seccionAdmin").classList.remove('d-none');
+        // Inicializar localStorage
+        if (!localStorage.getItem('totalVentas')) localStorage.setItem('totalVentas', '0');
+        if (!localStorage.getItem('historialCortes')) localStorage.setItem('historialCortes', JSON.stringify([]));
+        if (!localStorage.getItem('platosAgotados')) localStorage.setItem('platosAgotados', JSON.stringify([]));
+
+        if (!localStorage.getItem('mesasEstado')) {
+            let mesasIniciales = {};
+            for(let i=1; i<=8; i++) mesasIniciales[i] = 'Limpia / Libre';
+            localStorage.setItem('mesasEstado', JSON.stringify(mesasIniciales));
+        }
+        if (!localStorage.getItem('mesasCuentas')) {
+            let cuentasIniciales = {};
+            for(let i=1; i<=8; i++) cuentasIniciales[i] = 0;
+            localStorage.setItem('mesasCuentas', JSON.stringify(cuentasIniciales));
+        }
+        // Renderizar vistas dinámicas
+        function renderizarPanelesDinamicos() {
+            let agotados = JSON.parse(localStorage.getItem('platosAgotados') || '[]');
+            // 1. Inventario y Cuentas Admin
+            if (rol === 'admin') {
+                let htmlAcordeon = "";
+                menuInsumos.forEach((plato, idx) => {
+                    let estaAgotado = agotados.includes(plato.nombre);
+                    let badgeEstado = estaAgotado ? '<span class="badge bg-danger ms-2">Agotado en Cocina</span>' : '<span class="badge bg-success ms-2">Disponible</span>';
+                    let listaItemsHtml = plato.items.map(i => `<li class="list-group-item py-1 text-muted small">${i}</li>`).join('');
+                    htmlAcordeon += `
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading${idx}">
+                                <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${idx}">
+                                    ${plato.nombre} ($${plato.precio.toLocaleString()} COP) ${badgeEstado}
+                                </button>
+                            </h2>
+                            <div id="collapse${idx}" class="accordion-collapse collapse" data-bs-parent="#accordionInventario">
+                                <div class="accordion-body bg-light">
+                                    <span class="small fw-bold text-dark">Insumos a descontar por porción:</span>
+                                    <ul class="list-group list-group-flush mt-2">${listaItemsHtml}</ul>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                document.getElementById("accordionInventario").innerHTML = htmlAcordeon;
+            }
+        }
+        // Funciones para sumar adiciones y cobros por mesa
+        function sumarAdicionPrompt(nroMesa) {
+            let opciones = menuInsumos.map((p, index) => `${index + 1}. ${p.nombre} ($${p.precio.toLocaleString()})`).join('\n');
+            let seleccion = prompt(`Selecciona el número del plato a agregar a la Mesa ${nroMesa}:\n\n${opciones}`);
+
+            if (seleccion) {
+                let idx = parseInt(seleccion) - 1;
+                if (idx >= 0 && idx < menuInsumos.length) {
+                    let platoElegido = menuInsumos[idx];
+                    let cuentas = JSON.parse(localStorage.getItem('mesasCuentas'));
+                    cuentas[nroMesa] = (cuentas[nroMesa] || 0) + platoElegido.precio;
+                    localStorage.setItem('mesasCuentas', JSON.stringify(cuentas));
+                    let mesas = JSON.parse(localStorage.getItem('mesasEstado'));
+                    mesas[nroMesa] = 'Ocupada';
+                    localStorage.setItem('mesasEstado', JSON.stringify(mesas));
+                    alert(`➕ Se agregó "${platoElegido.nombre}" ($${platoElegido.precio.toLocaleString()}) a la Mesa ${nroMesa}.`);
+                    renderizarPanelesDinamicos();
+                    if(rol === 'admin') actualizarPanelAdmin();
+                } else {
+                    alert("❌ Opción inválida.");
+                }
+            }
+        }
+        function registrarEntregadoMesa(nroMesa) {
+            let cuentas = JSON.parse(localStorage.getItem('mesasCuentas'));
+            let valorTotalPedido = cuentas[nroMesa] || 0;
+            if (valorTotalPedido === 0) {
+                if (!confirm(`La Mesa ${nroMesa} tiene $0 acumulados. ¿Deseas cerrarla de todos modos?`)) return;
+            }
+            let totalActual = parseFloat(localStorage.getItem('totalVentas') || '0');
+            totalActual += valorTotalPedido;
+            localStorage.setItem('totalVentas', totalActual);
+            cuentas[nroMesa] = 0;
+            localStorage.setItem('mesasCuentas', JSON.stringify(cuentas));
+            let mesas = JSON.parse(localStorage.getItem('mesasEstado'));
+            mesas[nroMesa] = 'En Limpieza';
+            localStorage.setItem('mesasEstado', JSON.stringify(mesas));
+            alert(`✅ Mesa ${nroMesa} cobrada con éxito. Total recibido: $${valorTotalPedido.toLocaleString()} COP.\nLa mesa ha pasado a estado "En Limpieza".`);
+            renderizarPanelesDinamicos();
+            if(rol === 'admin') actualizarPanelAdmin();
+        }
+        // Actualizar datos generales de Admin en tiempo real
+        function actualizarPanelAdmin() {
+            if (rol !== 'admin') return;
+            let total = parseInt(localStorage.getItem('totalVentas') || 0);
+            document.getElementById("adminDineroAcumulado").innerText = `$${total.toLocaleString()} COP`;
+            let mesas = JSON.parse(localStorage.getItem('mesasEstado'));
+            let cuentas = JSON.parse(localStorage.getItem('mesasCuentas'));
+            let ocupadas = 0, libres = 0;
+            let htmlMesas = "";
+            let htmlCuentasAdmin = "";
+            for (let m = 1; m <= 8; m++) {
+                let estado = mesas[m];
+                let acumulado = cuentas[m] || 0;
+                if (estado === 'Ocupada') ocupadas++; else libres++;
+                let badgeClass = estado === 'Ocupada' ? 'bg-danger' : (estado === 'En Limpieza' ? 'bg-warning text-dark' : 'bg-success');
+
+                htmlMesas += `<tr><td class="fw-bold">Mesa ${m}</td><td><span class="badge ${badgeClass} px-3 py-2">${estado}</span></td></tr>`;
+                htmlCuentasAdmin += `
+                    <tr>
+                        <td class="fw-bold">Mesa ${m}</td>
+                        <td><span class="badge ${badgeClass} px-2 py-1">${estado}</span></td>
+                        <td class="fw-bold text-success">$${acumulado.toLocaleString()} COP</td>
+                        <td>
+                            <div class="d-flex justify-content-center gap-2">
+                                <button onclick="sumarAdicionPrompt(${m})" class="btn btn-outline-primary btn-sm py-0 px-2 fw-bold">➕ Sumar Adición</button>
+                                <button onclick="registrarEntregadoMesa(${m})" class="btn btn-success btn-sm py-0 px-2 fw-bold">✅ Cobrar y Cerrar</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }
+            document.getElementById("adminEstadoMesas").innerText = `${ocupadas} Ocupadas / ${libres} Libres`;
+            document.getElementById("tablaMesesAdmin").innerHTML = htmlMesas;
+            document.getElementById("tablaCuentasAdmin").innerHTML = htmlCuentasAdmin;
+            let agotados = JSON.parse(localStorage.getItem('platosAgotados') || '[]');
+            document.getElementById("adminAlertasCocina").innerText = `${agotados.length} Plato(s) Agotado(s)`;
+            let historial = JSON.parse(localStorage.getItem('historialCortes') || '[]');
+            let htmlHistorial = "";
+            if (historial.length === 0) {
+                htmlHistorial = `<tr><td colspan="3" class="text-muted py-3">No hay cortes guardados todavía.</td></tr>`;
+            } else {
+                historial.forEach((corte, index) => {
+                    htmlHistorial += `
+                        <tr>
+                            <td>${corte.fecha}</td>
+                            <td class="fw-bold text-success">$${parseInt(corte.total).toLocaleString()} COP</td>
+                            <td>
+                                <button onclick="eliminarCorte(${index})" class="btn btn-danger btn-sm py-0 px-2 fw-bold" title="Eliminar este reporte">✕</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+            document.getElementById("tablaHistorialCortes").innerHTML = htmlHistorial;
+        }
+        // Funciones de control
+        function guardarCorteFecha() {
+            let totalActual = localStorage.getItem('totalVentas') || '0';
+            let fechaHora = new Date().toLocaleString();
+            let historial = JSON.parse(localStorage.getItem('historialCortes') || '[]');
+            historial.unshift({ fecha: fechaHora, total: totalActual });
+            localStorage.setItem('historialCortes', JSON.stringify(historial));
+            alert("💾 ¡Corte guardado exitosamente por fecha!");
+            actualizarPanelAdmin();
+        }
+        function eliminarCorte(index) {
+            if (confirm("¿Estás seguro de eliminar este registro del historial?")) {
+                let historial = JSON.parse(localStorage.getItem('historialCortes') || '[]');
+                historial.splice(index, 1);
+                localStorage.setItem('historialCortes', JSON.stringify(historial));
+                alert("❌ Registro eliminado del historial.");
+                actualizarPanelAdmin();
+            }
+        }
+        function reiniciarTotal() {
+            if (confirm("¿Estás seguro de reiniciar el total de la caja a $0? (El historial guardado no se borrará).")) {
+                localStorage.setItem('totalVentas', '0');
+                alert("🔄 Total de caja reiniciado a $0 COP.");
+                actualizarPanelAdmin();
+            }
+        }
+        // Inicialización y sincronización en tiempo real
+        renderizarPanelesDinamicos();
+        actualizarPanelAdmin();
+        setInterval(actualizarPanelAdmin, 1000);
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
